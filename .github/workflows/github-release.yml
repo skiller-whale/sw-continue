@@ -68,7 +68,7 @@ jobs:
 
       - name: Update VSCode version
         working-directory: extensions/vscode
-        run: npm version ${{ steps.version.outputs.version }} --no-git-tag-version
+        run: npm version ${{ steps.version.outputs.version }} --no-git-tag-version --allow-same-version
 
       - name: Build VSCode extension
         working-directory: extensions/vscode
