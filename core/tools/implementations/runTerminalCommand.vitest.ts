@@ -269,9 +269,10 @@ describe("runTerminalCommandImpl", () => {
     const result = await runTerminalCommandImpl(args, extras);
 
     // Terminal command should now work in remote environments like SSH
-    expect(mockSpawn).toHaveBeenCalled();
-    // Verify it ran the command
+    // Verify it ran successfully
     expect(result[0].name).toBe("Terminal");
+    // Should contain the echo output or show completion
+    expect(result[0].status).toContain("completed");
   });
 
   it("should handle errors when executing invalid commands", async () => {
