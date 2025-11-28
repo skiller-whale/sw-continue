@@ -45,40 +45,11 @@ jobs:
   build:
     needs: [check_release_name, check-version]
     if: needs.check_release_name.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
-          - os: windows-latest
-            platform: win32
-            arch: x64
-            npm_config_arch: x64
-          - os: windows-latest
-            platform: win32
-            arch: arm64
-            npm_config_arch: arm
-          - os: ubuntu-latest
-            platform: linux
-            arch: x64
-            npm_config_arch: x64
-          - os: ubuntu-latest
-            platform: linux
-            arch: arm64
-            npm_config_arch: arm64
-          - os: ubuntu-latest
-            platform: linux
-            arch: armhf
-            npm_config_arch: arm
-          - os: ubuntu-latest
-            platform: alpine
-            arch: x64
-            npm_config_arch: x64
-          - os: macos-13
-            platform: darwin
-            arch: x64
-            npm_config_arch: x64
-          - os: macos-13
-            platform: darwin
+          - platform: linux
             arch: arm64
             npm_config_arch: arm64
     steps:
