@@ -52,12 +52,16 @@ jobs:
 
       - name: Build VSCode extension
         working-directory: extensions/vscode
-        run: npm run build
+        run: npm run prepackage
+
+      - name: Package extension (build artifacts)
+        working-directory: extensions/vscode
+        run: npm run package
 
       - name: Package VSCode extension as VSIX
         working-directory: extensions/vscode
         run: |
-          npx vsce package -o sw-continue-vscode-${{ steps.commit.outputs.hash }}.vsix
+          npx vsce package -o sw-continue-vscode-${{ steps.commit.outputs.hash }}.vsix --no-dependencies
           ls -lh sw-continue-vscode-*.vsix
 
       - name: Create GitHub Release
