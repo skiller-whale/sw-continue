@@ -43,24 +43,6 @@ jobs:
           cd core
           npm run build
 
-      - name: Install CLI dependencies
-        working-directory: extensions/cli
-        run: npm ci
-
-      - name: Build CLI
-        working-directory: extensions/cli
-        run: npm run build
-
-      - name: Update CLI version
-        working-directory: extensions/cli
-        run: npm version ${{ steps.tag_version.outputs.version }} --no-git-tag-version
-
-      - name: Create CLI tarball
-        working-directory: extensions/cli
-        run: |
-          tar -czf sw-continue-cli-${{ steps.tag_version.outputs.version }}.tar.gz dist/ package.json
-          ls -lh sw-continue-cli-*.tar.gz
-
       - name: Setup VSCode extension
         uses: ./.github/actions/setup-component
         with:
@@ -93,16 +75,9 @@ jobs:
           fi
 
           gh release create "v$VERSION" \
-            extensions/cli/sw-continue-cli-$VERSION.tar.gz \
             extensions/vscode/sw-continue-vscode-$VERSION.vsix \
             --title "sw-continue v$VERSION" \
-            --notes "## Downloads
-
-**CLI** - Extract and run \`./dist/cn.js\` or add to your PATH
-- Tarball: sw-continue-cli-$VERSION.tar.gz
-
-**VS Code Extension** - Install directly in VS Code
-- VSIX: sw-continue-vscode-$VERSION.vsix" \
+            --notes "VS Code Extension VSIX" \
             $PRERELEASE_FLAG
 
       - name: Output download URLs

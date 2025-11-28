@@ -102,16 +102,9 @@ jobs:
           gh release delete "v$VERSION" --yes || true
 
           gh release create "v$VERSION" \
-            extensions/cli/sw-continue-cli-$VERSION.tar.gz \
             extensions/vscode/sw-continue-vscode-$VERSION.vsix \
             --title "sw-continue v$VERSION" \
-            --notes "## Downloads
-
-**CLI** - Extract and run \`./dist/cn.js\` or add to your PATH
-- Tarball: sw-continue-cli-$VERSION.tar.gz
-
-**VS Code Extension** - Install directly in VS Code
-- VSIX: sw-continue-vscode-$VERSION.vsix" \
+            --notes "VS Code Extension VSIX" \
             $PRERELEASE_FLAG
 
       - name: Output download URLs
