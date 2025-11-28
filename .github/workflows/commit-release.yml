@@ -1,0 +1,90 @@
+name: Commit Release
+
+# Release VSIX on every commit to main with commit hash as tag
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build and Release VSIX
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get commit info
+        id: commit
+        run: |
+          COMMIT_HASH=${GITHUB_SHA:0:7}
+          COMMIT_MSG=$(git log -1 --pretty=%B 2>/dev/null || echo "")
+          echo "hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
+          echo "Commit hash: $COMMIT_HASH"
+
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: Setup packages
+        uses: ./.github/actions/setup-packages
+
+      - name: Setup core component
+        uses: ./.github/actions/setup-component
+        with:
+          component: core
+          include-root: true
+
+      - name: Build core
+        run: |
+          cd core
+          npm run build
+
+      - name: Setup VSCode extension
+        uses: ./.github/actions/setup-component
+        with:
+          component: vscode
+          include-root: false
+
+      - name: Build VSCode extension
+        working-directory: extensions/vscode
+        run: npm run build
+
+      - name: Package VSCode extension as VSIX
+        working-directory: extensions/vscode
+        run: |
+          npx vsce package -o sw-continue-vscode-${{ steps.commit.outputs.hash }}.vsix
+          ls -lh sw-continue-vscode-*.vsix
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          HASH="${{ steps.commit.outputs.hash }}"
+
+          # Create git tag (force overwrite if it exists)
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -f "commit-$HASH"
+          git push origin "commit-$HASH" --force
+
+          # Delete old release if it exists
+          gh release delete "commit-$HASH" --yes || true
+
+          gh release create "commit-$HASH" \
+            extensions/vscode/sw-continue-vscode-$HASH.vsix \
+            --title "Commit $HASH" \
+            --notes "Development build from commit $HASH" \
+            --prerelease
+
+      - name: Output download URL
+        run: |
+          HASH="${{ steps.commit.outputs.hash }}"
+          echo "VSIX built and released!"
+          echo ""
+          echo "Download URL:"
+          echo "VSCode VSIX: https://github.com/${{ github.repository }}/releases/download/commit-$HASH/sw-continue-vscode-$HASH.vsix"
