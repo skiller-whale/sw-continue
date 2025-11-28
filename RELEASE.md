@@ -16,12 +16,14 @@ Trigger the "GitHub Release" workflow manually:
 4. Click **Run workflow**
 
 The workflow will:
+
 - Build the CLI from the current commit
 - Create a GitHub release
 - Upload tarball and zip artifacts
 - Output download URLs
 
 **Download URLs** will follow this pattern:
+
 ```
 https://github.com/skiller-whale/sw-continue/releases/download/v1.0.0/sw-continue-cli-1.0.0.tar.gz
 https://github.com/skiller-whale/sw-continue/releases/download/v1.0.0/sw-continue-cli-1.0.0.zip
@@ -37,6 +39,7 @@ git push origin v1.0.0
 ```
 
 The "Tagged Release" workflow will automatically:
+
 - Detect the tag
 - Build the CLI
 - Create a GitHub release with artifacts
@@ -45,12 +48,14 @@ The "Tagged Release" workflow will automatically:
 ## Using the Released CLI
 
 ### From Tarball
+
 ```bash
 curl -L https://github.com/skiller-whale/sw-continue/releases/download/v1.0.0/sw-continue-cli-1.0.0.tar.gz | tar xz
 ./dist/cn.js --help
 ```
 
 ### From Zip
+
 ```bash
 # Download and extract
 curl -L https://github.com/skiller-whale/sw-continue/releases/download/v1.0.0/sw-continue-cli-1.0.0.zip -o cli.zip
@@ -59,6 +64,7 @@ unzip cli.zip
 ```
 
 ### Add to PATH
+
 ```bash
 # Extract to a location in your PATH
 tar xz -C /usr/local/bin --strip-components=1 -f sw-continue-cli-1.0.0.tar.gz
@@ -68,6 +74,7 @@ cn --help
 ## Version Format
 
 Use semantic versioning:
+
 - **Stable**: `1.0.0`, `1.2.3`
 - **Beta**: `1.0.0-beta.1`, `1.0.0-beta.2`
 - **Alpha**: `1.0.0-alpha.1`
@@ -76,11 +83,13 @@ Use semantic versioning:
 ## Current Workflows
 
 ### `github-release.yml`
+
 - **Trigger**: Manual via GitHub Actions UI
 - **Inputs**: Version number, prerelease flag
 - **Output**: GitHub release with tarball and zip
 
 ### `tagged-release.yml`
+
 - **Trigger**: Push any tag matching `v[0-9]+.[0-9]+.[0-9]+*`
 - **Output**: Automatic GitHub release with artifacts
 - **Prerelease Detection**: Automatic (checks if tag contains alpha/beta/rc/pre)
