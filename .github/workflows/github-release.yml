@@ -51,21 +51,35 @@ jobs:
         working-directory: extensions/cli
         run: npm run build
 
-      - name: Update version in package.json
+      - name: Update CLI version
         working-directory: extensions/cli
         run: npm version ${{ inputs.version }} --no-git-tag-version
 
-      - name: Create release artifacts
+      - name: Create CLI tarball
         working-directory: extensions/cli
         run: |
-          # Create tarball
           tar -czf sw-continue-cli-${{ inputs.version }}.tar.gz dist/ package.json
+          ls -lh sw-continue-cli-*.tar.gz
 
-          # Create zip
-          zip -r sw-continue-cli-${{ inputs.version }}.zip dist/ package.json
+      - name: Setup VSCode extension
+        uses: ./.github/actions/setup-component
+        with:
+          component: vscode
+          include-root: false
 
-          # List artifacts
-          ls -lh sw-continue-cli-*
+      - name: Update VSCode version
+        working-directory: extensions/vscode
+        run: npm version ${{ inputs.version }} --no-git-tag-version
+
+      - name: Build VSCode extension
+        working-directory: extensions/vscode
+        run: npm run build
+
+      - name: Package VSCode extension as VSIX
+        working-directory: extensions/vscode
+        run: |
+          npx vsce package -o sw-continue-vscode-${{ inputs.version }}.vsix
+          ls -lh sw-continue-vscode-*.vsix
 
       - name: Create GitHub Release
         env:
@@ -85,9 +99,15 @@ jobs:
 
           gh release create "v${{ inputs.version }}" \
             extensions/cli/sw-continue-cli-${{ inputs.version }}.tar.gz \
-            extensions/cli/sw-continue-cli-${{ inputs.version }}.zip \
-            --title "sw-continue CLI v${{ inputs.version }}" \
-            --notes "Download the CLI binary for your platform below. Extract and run \`./dist/cn.js\` or add to your PATH." \
+            extensions/vscode/sw-continue-vscode-${{ inputs.version }}.vsix \
+            --title "sw-continue v${{ inputs.version }}" \
+            --notes "## Downloads
+
+**CLI** - Extract and run \`./dist/cn.js\` or add to your PATH
+- Tarball: sw-continue-cli-${{ inputs.version }}.tar.gz
+
+**VS Code Extension** - Install directly in VS Code
+- VSIX: sw-continue-vscode-${{ inputs.version }}.vsix" \
             $PRERELEASE_FLAG
 
       - name: Output download URLs
@@ -95,5 +115,5 @@ jobs:
           echo "Release created successfully!"
           echo ""
           echo "Download URLs:"
-          echo "Tarball: https://github.com/${{ github.repository }}/releases/download/v${{ inputs.version }}/sw-continue-cli-${{ inputs.version }}.tar.gz"
-          echo "Zip: https://github.com/${{ github.repository }}/releases/download/v${{ inputs.version }}/sw-continue-cli-${{ inputs.version }}.zip"
+          echo "CLI Tarball: https://github.com/${{ github.repository }}/releases/download/v${{ inputs.version }}/sw-continue-cli-${{ inputs.version }}.tar.gz"
+          echo "VSCode VSIX: https://github.com/${{ github.repository }}/releases/download/v${{ inputs.version }}/sw-continue-vscode-${{ inputs.version }}.vsix"
