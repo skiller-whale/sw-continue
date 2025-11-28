@@ -3,7 +3,7 @@ name: GitHub Release
 on:
   push:
     branches:
-      - "v[0-9]+.[0-9]+.[0-9]+*"
+      - "release/[0-9]+.[0-9]+.[0-9]+*"
 
 permissions:
   contents: write
@@ -16,7 +16,7 @@ jobs:
       - name: Get version from branch name
         id: version
         run: |
-          VERSION=${GITHUB_REF#refs/heads/v}
+          VERSION=${GITHUB_REF#refs/heads/release/}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Release version: $VERSION"
 
