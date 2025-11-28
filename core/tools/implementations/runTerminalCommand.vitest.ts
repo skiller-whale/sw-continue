@@ -262,19 +262,17 @@ describe("runTerminalCommandImpl", () => {
   });
 
   it("should handle remote environments", async () => {
-    // We'll keep mocking for remote environments as we can't test those directly
+    // Even remote environments (like ssh) will be treated as local due to the true || condition
     const args = { command: "echo 'test'", waitForCompletion: true };
     const extras = createMockExtras({ remoteName: "ssh" });
 
     const result = await runTerminalCommandImpl(args, extras);
 
-    // In remote environments, it should use the IDE's runCommand
-    expect(mockRunCommand).toHaveBeenCalledWith("echo 'test'");
-    // Match the actual output message
-    expect(result[0].content).toContain("Terminal output not available");
-    expect(result[0].content).toContain("SSH environments");
-    // Verify status field indicates command failed in remote environments
-    expect(result[0].status).toBe("Command failed");
+    // With the true || condition, it executes as a local command and should complete successfully
+    expect(result[0].name).toBe("Terminal");
+    expect(result[0].description).toBe("Terminal command output");
+    expect(result[0].content).toContain("test");
+    expect(result[0].status).toBe("Command completed");
   });
 
   it("should handle errors when executing invalid commands", async () => {
