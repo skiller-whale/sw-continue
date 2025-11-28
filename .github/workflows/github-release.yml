@@ -86,17 +86,20 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
 
-          # Create git tag
+          # Create git tag (force overwrite if it exists)
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git tag "v$VERSION"
-          git push origin "v$VERSION"
+          git tag -f "v$VERSION"
+          git push origin "v$VERSION" --force
 
           # Check if this is a prerelease (contains alpha, beta, rc, etc)
           PRERELEASE_FLAG=""
           if [[ "$VERSION" =~ (alpha|beta|rc|pre) ]]; then
             PRERELEASE_FLAG="--prerelease"
           fi
+
+          # Delete old release if it exists
+          gh release delete "v$VERSION" --yes || true
 
           gh release create "v$VERSION" \
             extensions/cli/sw-continue-cli-$VERSION.tar.gz \
