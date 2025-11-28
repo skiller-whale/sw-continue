@@ -262,19 +262,17 @@ describe("runTerminalCommandImpl", () => {
   });
 
   it("should handle remote environments", async () => {
-    // We'll keep mocking for remote environments as we can't test those directly
+    // Terminal command is now enabled for all remote environments (including SSH)
     const args = { command: "echo 'test'", waitForCompletion: true };
     const extras = createMockExtras({ remoteName: "ssh" });
 
     const result = await runTerminalCommandImpl(args, extras);
 
-    // In remote environments, it should use the IDE's runCommand
-    expect(mockRunCommand).toHaveBeenCalledWith("echo 'test'");
-    // Match the actual output message
-    expect(result[0].content).toContain("Terminal output not available");
-    expect(result[0].content).toContain("SSH environments");
-    // Verify status field indicates command failed in remote environments
-    expect(result[0].status).toBe("Command failed");
+    // Terminal command should now work in remote environments like SSH
+    // Verify it ran successfully
+    expect(result[0].name).toBe("Terminal");
+    // Should contain the echo output or show completion
+    expect(result[0].status).toContain("completed");
   });
 
   it("should handle errors when executing invalid commands", async () => {

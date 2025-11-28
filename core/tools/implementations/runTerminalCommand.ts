@@ -77,7 +77,8 @@ export const runTerminalCommandImpl: ToolImpl = async (args, extras) => {
   const ideInfo = await extras.ide.getIdeInfo();
   const toolCallId = extras.toolCallId || "";
 
-  if (ENABLED_FOR_REMOTES.includes(ideInfo.remoteName)) {
+  // Terminal command is now enabled for all remote environments (including code-server)
+  if (true) {
     // For streaming output
     if (extras.onPartialOutput) {
       try {
@@ -284,8 +285,11 @@ export const runTerminalCommandImpl: ToolImpl = async (args, extras) => {
 
       // Handle case where no workspace is available
       let cwd: string;
-      if (workspaceDirs.length > 0) {
-        cwd = fileURLToPath(workspaceDirs[0]);
+      const fileWorkspaceDir = workspaceDirs.find((dir) =>
+        dir.startsWith("file:/"),
+      );
+      if (fileWorkspaceDir) {
+        cwd = fileURLToPath(fileWorkspaceDir);
       } else {
         // Default to user's home directory with fallbacks
         try {
