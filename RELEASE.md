@@ -2,48 +2,52 @@
 
 This document explains how to release the sw-continue CLI.
 
-## Release Options
+## Release Process
 
-### Option 1: Manual Release via GitHub Actions (Recommended)
+### Create a Release Branch
 
-Trigger the "GitHub Release" workflow manually:
+Create and push a release branch matching the version pattern:
 
-1. Go to **Actions** → **GitHub Release**
-2. Click **Run workflow**
-3. Enter:
-   - **Version**: Semantic version (e.g., `1.0.0`, `1.0.0-beta.1`)
-   - **Prerelease**: Check if this is a prerelease (alpha, beta, rc, etc.)
-4. Click **Run workflow**
+```bash
+# For version 1.0.0
+git checkout -b v1.0.0
 
-The workflow will:
+# Make any final changes if needed
+git add .
+git commit -m "chore: prepare release v1.0.0"
 
-- Build the CLI from the current commit
-- Create a GitHub release
-- Upload tarball and zip artifacts
-- Output download URLs
+# Push the branch - this triggers the release workflow
+git push origin v1.0.0
+```
+
+The "GitHub Release" workflow will automatically:
+
+- Detect the branch (pattern: `v[0-9]+.[0-9]+.[0-9]+*`)
+- Build both CLI and VS Code extension
+- **Create a git tag** `v1.0.0` from the branch
+- Create a GitHub release with artifacts
+- Generate download URLs
+- Auto-detect prereleases (if version contains `alpha`, `beta`, `rc`, `pre`)
+
+**Note**: The workflow creates the tag, so you don't need to manually create one. Just push the branch.
 
 **Download URLs** will follow this pattern:
 
 ```
 https://github.com/skiller-whale/sw-continue/releases/download/v1.0.0/sw-continue-cli-1.0.0.tar.gz
-https://github.com/skiller-whale/sw-continue/releases/download/v1.0.0/sw-continue-cli-1.0.0.zip
+https://github.com/skiller-whale/sw-continue/releases/download/v1.0.0/sw-continue-vscode-1.0.0.vsix
 ```
 
-### Option 2: Tag-based Release
+### Alternative: Direct Tag Push
 
-Push a git tag matching the version pattern:
+For quick releases, you can also push a tag directly:
 
 ```bash
 git tag v1.0.0
 git push origin v1.0.0
 ```
 
-The "Tagged Release" workflow will automatically:
-
-- Detect the tag
-- Build the CLI
-- Create a GitHub release with artifacts
-- Auto-detect prereleases (if tag contains `alpha`, `beta`, `rc`, etc.)
+The "Tagged Release" workflow will create a release from the tag.
 
 ## Using the Released CLI
 
@@ -82,16 +86,16 @@ Use semantic versioning:
 
 ## Current Workflows
 
-### `github-release.yml`
+### `github-release.yml` (Recommended)
 
-- **Trigger**: Manual via GitHub Actions UI
-- **Inputs**: Version number, prerelease flag
-- **Output**: GitHub release with tarball and zip
+- **Trigger**: Push to release branch matching `v[0-9]+.[0-9]+.[0-9]+*` (e.g., `v1.0.0`, `v1.0.0-beta.1`)
+- **Assets**: CLI tarball + VS Code VSIX
+- **Prerelease Detection**: Automatic (checks if version contains alpha/beta/rc/pre)
 
-### `tagged-release.yml`
+### `tagged-release.yml` (Alternative)
 
 - **Trigger**: Push any tag matching `v[0-9]+.[0-9]+.[0-9]+*`
-- **Output**: Automatic GitHub release with artifacts
+- **Assets**: CLI tarball + VS Code VSIX
 - **Prerelease Detection**: Automatic (checks if tag contains alpha/beta/rc/pre)
 
 ## Removed Workflows
