@@ -77,7 +77,7 @@ export const runTerminalCommandImpl: ToolImpl = async (args, extras) => {
   const ideInfo = await extras.ide.getIdeInfo();
   const toolCallId = extras.toolCallId || "";
 
-  if (ENABLED_FOR_REMOTES.includes(ideInfo.remoteName)) {
+  if (true || ENABLED_FOR_REMOTES.includes(ideInfo.remoteName)) {
     // For streaming output
     if (extras.onPartialOutput) {
       try {
