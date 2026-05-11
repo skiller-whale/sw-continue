@@ -1141,9 +1141,10 @@ export interface ConfigDependentToolParams {
   isSignedIn: boolean;
   isRemote: boolean;
   modelName: string | undefined;
+  ide: IDE;
 }
 
-export type GetTool = (params: ConfigDependentToolParams) => Tool;
+export type GetTool = (params: ConfigDependentToolParams) => Promise<Tool>;
 
 export interface BaseCompletionOptions {
   temperature?: number;
@@ -1880,6 +1881,16 @@ export interface RuleWithSource {
   alwaysApply?: boolean;
   invokable?: boolean;
 }
+
+export interface Skill {
+  name: string;
+  description: string;
+  path: string;
+  content: string;
+  files: string[];
+  license?: string;
+}
+
 export interface CompleteOnboardingPayload {
   mode: OnboardingModes;
   provider?: string;
