@@ -111,7 +111,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git tag -f "v$VERSION"
-          git push origin "v$VERSION" --force
+          git push origin "refs/tags/v$VERSION" --force
 
           # Check if this is a prerelease (contains alpha, beta, rc, etc)
           PRERELEASE_FLAG=""
