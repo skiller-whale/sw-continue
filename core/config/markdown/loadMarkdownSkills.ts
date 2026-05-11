@@ -1,6 +1,6 @@
 import {
-    ConfigValidationError,
-    parseMarkdownRule,
+  ConfigValidationError,
+  parseMarkdownRule,
 } from "@continuedev/config-yaml";
 import z from "zod";
 import { IDE, Skill } from "../..";
