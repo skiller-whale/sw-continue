@@ -70,9 +70,26 @@ jobs:
         working-directory: extensions/vscode
         run: npm version ${{ steps.version.outputs.version }} --no-git-tag-version --allow-same-version
 
+      - name: Build packages
+        run: node ./scripts/build-packages.js
+
+      - name: Install gui dependencies
+        working-directory: gui
+        run: npm ci
+
+      - name: Build GUI
+        working-directory: gui
+        run: npm run build
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+
       - name: Build VSCode extension
         working-directory: extensions/vscode
         run: npm run prepackage
+
+      - name: Re-install esbuild
+        working-directory: extensions/vscode
+        run: npm install -f esbuild
 
       - name: Package extension (build artifacts)
         working-directory: extensions/vscode
