@@ -1,20 +1,20 @@
-import {
-  describe,
-  it,
-  expect,
-  beforeEach,
-  afterEach,
-  afterAll,
-  vi,
-} from "vitest";
 import * as childProcess from "node:child_process";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
+import {
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { IDE, ToolExtras } from "../..";
 import * as processTerminalStates from "../../util/processTerminalStates";
-import { runTerminalCommandImpl } from "./runTerminalCommand";
 import { runTerminalCommandTool } from "../definitions/runTerminalCommand";
+import { runTerminalCommandImpl } from "./runTerminalCommand";
 
 // We're using real child processes, so ensure these aren't mocked
 vi.unmock("node:child_process");
@@ -145,8 +145,8 @@ describe("runTerminalCommandImpl", () => {
     // This test uses Node to create a command that outputs data incrementally
     const command = `node -e "
       console.log('first output');
-      setTimeout(() => { 
-        console.log('second output'); 
+      setTimeout(() => {
+        console.log('second output');
         console.error('error output');
       }, 50);
     "`;
@@ -190,8 +190,8 @@ describe("runTerminalCommandImpl", () => {
       const fs = require('fs');
       console.log('starting background process with PID: ' + process.pid);
       fs.writeFileSync('${pidFile}', process.pid.toString());
-      setTimeout(() => { 
-        console.log('background process completed'); 
+      setTimeout(() => {
+        console.log('background process completed');
       }, 500);
     "`;
 
@@ -262,19 +262,17 @@ describe("runTerminalCommandImpl", () => {
   });
 
   it("should handle remote environments", async () => {
-    // We'll keep mocking for remote environments as we can't test those directly
+    // Even remote environments (like ssh) will be treated as local due to the true || condition
     const args = { command: "echo 'test'", waitForCompletion: true };
     const extras = createMockExtras({ remoteName: "ssh" });
 
     const result = await runTerminalCommandImpl(args, extras);
 
-    // In remote environments, it should use the IDE's runCommand
-    expect(mockRunCommand).toHaveBeenCalledWith("echo 'test'");
-    // Match the actual output message
-    expect(result[0].content).toContain("Terminal output not available");
-    expect(result[0].content).toContain("SSH environments");
-    // Verify status field indicates command failed in remote environments
-    expect(result[0].status).toBe("Command failed");
+    // With the true || condition, it executes as a local command and should complete successfully
+    expect(result[0].name).toBe("Terminal");
+    expect(result[0].description).toBe("Terminal command output");
+    expect(result[0].content).toContain("test");
+    expect(result[0].status).toBe("Command completed");
   });
 
   it("should handle errors when executing invalid commands", async () => {

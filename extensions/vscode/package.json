@@ -5,18 +5,12 @@
   "version": "1.2.11",
   "repository": {
     "type": "git",
-    "url": "https://github.com/continuedev/continue"
+    "url": "https://github.com/skiller-whale/sw-continue"
   },
   "extensionKind": [
     "ui",
     "workspace"
   ],
-  "bugs": {
-    "url": "https://github.com/continuedev/continue/issues",
-    "email": "nate@continue.dev"
-  },
-  "homepage": "https://continue.dev",
-  "qna": "https://github.com/continuedev/continue/issues/new/choose",
   "license": "Apache-2.0",
   "displayName": "Continue - open-source AI code agent",
   "pricing": "Free",
